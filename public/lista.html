@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="index.css">
+  <title>Projeto</title>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Projeto-Node</h1>
+    <h3>-testando</h3>
+
+
+    <table>
+      <thead>
+        <tr>
+          <th>Id</th>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!--  -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const form = document.querySelector('form')
+    const tbody = document.querySelector('tbody')
+
+    async function fetchData() {
+      const resp = await fetch('/users/' + localStorage.getItem('token'))
+      const data = await resp.json()
+
+      tbody.innerHTML = ''
+
+      data.forEach(user => {
+        const tr = document.createElement('tr')
+        tr.innerHTML = `
+          <td>${user.id}</td>
+          <td>${user.name}</td>
+          <td>${user.email}</td>
+          <td>
+            <button class="excluir">Excluir</button>
+            <button class="editar">Editar</button>
+          </td>
+        `
+
+        const btExcluir = tr.querySelector('button.excluir')
+        const btEditar = tr.querySelector('button.editar')
+        const token = localStorage.getItem('token');
+        console.log(token);
+        btExcluir.addEventListener('click', async () => {
+          const resp = await fetch(`/users/${user.id}/${token}`, { method: 'DELETE' })
+          if(resp.status == 401){
+            alert("Voce nao tem permissão");
+            return
+          }
+          tr.remove()
+        })
+
+        btEditar.addEventListener('click', async () => {
+          const name = prompt('Novo nome:', user.name)
+          const email = prompt('Novo email:', user.email)
+
+          const resp =  await fetch(`/users/${user.id}/${token}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email })
+          })
+
+          if (resp.status == 401) {
+            alert("Voce nao tem permissão")
+            return 
+          }
+
+          fetchData()
+        })
+
+        tbody.appendChild(tr)
+      })
+    }
+
+    fetchData()
+  </script>
+</body>
+
+</html>
