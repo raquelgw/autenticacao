@@ -83,7 +83,7 @@
             const btEditar = tr.querySelector('button.editar');
 
             btExcluir.addEventListener('click', async () => {
-              const resp = await fetch('/users/${user.id}/${token}', { method: 'DELETE' });
+              const resp = await fetch(`/users/${user.id}/${token}`, { method: 'DELETE' });
               if (resp.status === 401) {
                 alert("Você não tem permissão");
                 return;
@@ -96,10 +96,11 @@
               const email = prompt('Novo email:', user.email);
 
               const resp = await fetch(`/users/${user.id}/${token}`, {
-              method: 'PUT',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ name, email }),
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email }),
               });
+
               if (resp.status === 401) {
                 alert("Você não tem permissão");
                 return;
