@@ -6,6 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="lista.css">
   <title>Projeto</title>
+  <style>
+    /* Adicione estilo para a mensagem de erro */
+    .error-message {
+      color: red;
+      font-size: 1.5em;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 
 <body>
@@ -13,8 +22,11 @@
     <h1>Projeto-Node</h1>
     <h3>-testando</h3>
 
+    <div id="error-container" class="error-message" style="display: none;">
+      Você não tem permissão para acessar esta página.
+    </div>
 
-    <table>
+    <table id="user-table" style="display: none;">
       <thead>
         <tr>
           <th>Id</th>
@@ -30,63 +42,83 @@
   </div>
 
   <script>
-    const form = document.querySelector('form')
-    const tbody = document.querySelector('tbody')
+    // Verifica se o usuário está logado
+    const token = localStorage.getItem('token');
+    const errorContainer = document.getElementById('error-container');
+    const userTable = document.getElementById('user-table');
 
-    async function fetchData() {
-      const resp = await fetch('/users/' + localStorage.getItem('token'))
-      const data = await resp.json()
+    if (!token) {
+      // Se não houver token, mostra a mensagem de erro
+      errorContainer.style.display = 'block';
+    } else {
+      // Se houver token, carrega os dados dos usuários
+      const tbody = userTable.querySelector('tbody');
 
-      tbody.innerHTML = ''
-
-      data.forEach(user => {
-        const tr = document.createElement('tr')
-        tr.innerHTML = `
-          <td>${user.id}</td>
-          <td>${user.name}</td>
-          <td>${user.email}</td>
-          <td>
-            <button class="excluir">Excluir</button>
-            <button class="editar">Editar</button>
-          </td>
-        `
-
-        const btExcluir = tr.querySelector('button.excluir')
-        const btEditar = tr.querySelector('button.editar')
-        const token = localStorage.getItem('token');
-        console.log(token);
-        btExcluir.addEventListener('click', async () => {
-          const resp = await fetch(`/users/${user.id}/${token}`, { method: 'DELETE' })
-          if(resp.status == 401){
-            alert("Voce nao tem permissão");
-            return
+      async function fetchData() {
+        try {
+          const resp = await fetch('/users/' + token);
+          if (resp.status === 401) {
+            throw new Error('Sem Permissão');
           }
-          tr.remove()
-        })
+          const data = await resp.json();
 
-        btEditar.addEventListener('click', async () => {
-          const name = prompt('Novo nome:', user.name)
-          const email = prompt('Novo email:', user.email)
+          userTable.style.display = 'table'; // Exibe a tabela
+          errorContainer.style.display = 'none'; // Oculta a mensagem de erro
 
-          const resp =  await fetch(`/users/${user.id}/${token}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email })
-          })
+          tbody.innerHTML = '';
 
-          if (resp.status == 401) {
-            alert("Voce nao tem permissão")
-            return 
-          }
+          data.forEach(user => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${user.id}</td>
+              <td>${user.name}</td>
+              <td>${user.email}</td>
+              <td>
+                <button class="excluir">Excluir</button>
+                <button class="editar">Editar</button>
+              </td>
+            `;
 
-          fetchData()
-        })
+            const btExcluir = tr.querySelector('button.excluir');
+            const btEditar = tr.querySelector('button.editar');
 
-        tbody.appendChild(tr)
-      })
+            btExcluir.addEventListener('click', async () => {
+              const resp = await fetch('/users/${user.id}/${token}', { method: 'DELETE' });
+              if (resp.status === 401) {
+                alert("Você não tem permissão");
+                return;
+              }
+              tr.remove();
+            });
+
+            btEditar.addEventListener('click', async () => {
+              const name = prompt('Novo nome:', user.name);
+              const email = prompt('Novo email:', user.email);
+
+              const resp = await fetch(`/users/${user.id}/${token}`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name, email }),
+              });
+              if (resp.status === 401) {
+                alert("Você não tem permissão");
+                return;
+              }
+
+              fetchData();
+            });
+
+            tbody.appendChild(tr);
+          });
+        } catch (error) {
+          console.error(error.message);
+          errorContainer.style.display = 'block'; // Exibe a mensagem de erro
+          userTable.style.display = 'none'; // Oculta a tabela
+        }
+      }
+
+      fetchData();
     }
-
-    fetchData()
   </script>
 </body>
 

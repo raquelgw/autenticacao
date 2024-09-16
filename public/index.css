@@ -1,0 +1,93 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-image: url(https://i.pinimg.com/564x/d8/53/49/d85349f7e91f366aee9f3e21f468f4bf.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.container {
+    background: rgba(0, 0, 0, 0.7); 
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 600px;
+    margin: 100px auto;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+form input[type="text"],
+form input[type="password"] {
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin: 10px 0;
+    width: calc(100% - 40px);
+    max-width: 400px;
+    font-size: 1em;
+}
+
+form button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0b3868;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+form button:hover {
+    background-color: #023469;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0b3868;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin: 10px 5px;
+}
+
+button:hover {
+    background-color: #023469;
+}
+
+pre {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: 'Courier New', Courier, monospace;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: left;
+}
